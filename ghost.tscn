@@ -1,0 +1,34 @@
+[gd_scene load_steps=6 format=3 uid="uid://drq33omwkv1we"]
+
+[ext_resource type="Script" uid="uid://cm7g2apnyoo2a" path="res://ghost.gd" id="1_6attn"]
+[ext_resource type="Texture2D" uid="uid://y3d5ku5jndv5" path="res://Ghost.png" id="2_6attn"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_e80uo"]
+size = Vector2(32, 48)
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_v5pp4"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_6attn"]
+
+[node name="CharacterBody2D" type="CharacterBody2D"]
+position = Vector2(158, 82)
+script = ExtResource("1_6attn")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_e80uo")
+one_way_collision = true
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+material = SubResource("CanvasItemMaterial_v5pp4")
+scale = Vector2(2, 2)
+texture = ExtResource("2_6attn")
+hframes = 2
+vframes = 2
+
+[node name="Label" type="Label" parent="."]
+offset_left = -5.0
+offset_top = -17.0
+offset_right = 35.0
+offset_bottom = 6.0
+text = "1"
+label_settings = SubResource("LabelSettings_6attn")
