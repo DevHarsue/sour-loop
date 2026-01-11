@@ -3,6 +3,7 @@ extends Area2D
 signal level_won
 
 @export var next_level_scene: PackedScene
+@export var end_scene: PackedScene
 
 func _ready() -> void:
 	add_to_group("goals")
@@ -15,6 +16,8 @@ func _on_body_entered(body: Node) -> void:
 	emit_signal("level_won")
 	if next_level_scene:
 		get_tree().change_scene_to_packed(next_level_scene)
+	elif end_scene:
+		get_tree().change_scene_to_packed(end_scene)
 	else:
 		print("Juego terminado: no hay siguiente nivel asignado.")
 

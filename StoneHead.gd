@@ -220,8 +220,13 @@ func _restart_loop_from_manager() -> void:
 		manager.start_new_loop()
 
 func _calculate_drop_target() -> Dictionary:
-	var bottom_offset := _get_collision_bottom_offset()
-	var from := global_position + Vector2(0.0, bottom_offset)
+	var collider_bottom := _get_collider_bottom_offset()
+	var visual_bottom := _get_visual_bottom_offset()
+	var ray_offset: float = collider_bottom
+	if ray_offset <= 0.0:
+		ray_offset = visual_bottom
+	var bottom_offset: float = max(collider_bottom, visual_bottom)
+	var from := global_position + Vector2(0.0, ray_offset)
 	var to := from + Vector2(0.0, max_drop_distance)
 	var space_state := get_world_2d().direct_space_state
 	var target_y: float = max(_original_position.y, global_position.y + max_drop_distance)
@@ -247,7 +252,8 @@ func _calculate_drop_target() -> Dictionary:
 		"hit_player": hit_player
 	}
 
-func _get_collision_bottom_offset() -> float:
+
+func _get_collider_bottom_offset() -> float:
 	var collider := get_node_or_null("CollisionShape2D") as CollisionShape2D
 	if collider == null or collider.shape == null:
 		return 0.0
@@ -262,3 +268,30 @@ func _get_collision_bottom_offset() -> float:
 	elif shape is CircleShape2D:
 		half_height = shape.radius * scale_y
 	return offset + half_height
+
+
+func _get_visual_bottom_offset() -> float:
+	if _animated_sprite == null:
+		return 0.0
+	var frames := _animated_sprite.sprite_frames
+	if frames == null:
+		return _animated_sprite.position.y
+	# Use the tallest frame to align the visual bottom with the ground when dropping.
+	var max_height := 0.0
+	for animation_name: StringName in frames.get_animation_names():
+		var frame_count := frames.get_frame_count(animation_name)
+		for frame_index: int in range(frame_count):
+			var texture := frames.get_frame_texture(animation_name, frame_index)
+			if texture:
+				var size := texture.get_size()
+				if size.y > max_height:
+					max_height = size.y
+	if max_height <= 0.0:
+		return _animated_sprite.position.y
+	var base_offset := _animated_sprite.offset.y
+	if _animated_sprite.centered:
+		base_offset += max_height * 0.5
+	else:
+		base_offset += max_height
+	var scale_y := absf(_animated_sprite.scale.y)
+	return _animated_sprite.position.y + base_offset * scale_y

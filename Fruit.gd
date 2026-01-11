@@ -32,6 +32,8 @@ func _on_body_entered(body: Node) -> void:
 	_disable_pickup()
 	var manager := _get_game_manager()
 	if manager:
+		if manager.has_method("notify_fruit_collected"):
+			manager.notify_fruit_collected(self)
 		manager.trigger_loop_start(global_position)
 	emit_signal("fruit_collected")
 

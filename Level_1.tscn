@@ -8,7 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://c1spl2xpfe31t" path="res://Player.tscn" id="5_smwyr"]
 [ext_resource type="PackedScene" uid="uid://c0ayqyvysb1pl" path="res://deadObject.tscn" id="7_tedvs"]
 [ext_resource type="PackedScene" uid="uid://bl23ohds6uh3s" path="res://Portal.tscn" id="8_gyeet"]
-[ext_resource type="PackedScene" uid="uid://cu7eqkcaat4xi" path="res://Level_2.tscn" id="9_gyeet"]
+[ext_resource type="PackedScene" uid="uid://bau7flsmhpcik" path="res://Level_2.tscn" id="9_gyeet"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_65pcf"]
 texture = ExtResource("2_kidjj")

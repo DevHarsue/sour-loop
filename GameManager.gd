@@ -21,8 +21,9 @@ var _player: CharacterBody2D
 var _state: GameState = GameState.WAITING_FOR_FRUIT
 var _loop_start_position: Vector2 = Vector2.ZERO
 var _has_loop_start_position: bool = false
-var _active_fruit: Area2D
-var _fruit_activation_pending: bool = false
+var _fruits: Array[Area2D] = []
+var _fruits_pending_reactivation: Array[Area2D] = []
+var _fruit_reactivation_timer: SceneTreeTimer = null
 
 func _ready() -> void:
 	add_to_group("game_manager")
@@ -62,7 +63,6 @@ func trigger_loop_start(start_position: Vector2) -> void:
 	_player.velocity = Vector2.ZERO
 	if _player.has_method("start_new_recording"):
 		_player.start_new_recording()
-	_ensure_fruit_hidden()
 	_begin_ghost_replays()
 
 func restart_loop(clear_recordings: bool = false) -> void:
@@ -95,9 +95,13 @@ func restart_loop(clear_recordings: bool = false) -> void:
 	if clear_recordings:
 		recordings_history.clear()
 		_clear_ghosts()
+		_reactivate_all_fruits()
 	else:
 		spawn_ghosts()
-	_respawn_fruit(false, recordings_history.is_empty())
+		if recordings_history.is_empty():
+			_reactivate_pending_fruits_immediately()
+		elif ghost_container == null or ghost_container.get_child_count() == 0:
+			_reactivate_pending_fruits_immediately()
 	connect_level_signals()
 
 func set_player(player_body: CharacterBody2D) -> void:
@@ -137,68 +141,75 @@ func _find_existing_player() -> CharacterBody2D:
 			return body
 	return null
 
-func _ensure_fruit_hidden() -> void:
-	_fruit_activation_pending = false
-	_update_active_fruit_reference()
-	if not is_instance_valid(_active_fruit):
+func notify_fruit_collected(fruit: Area2D) -> void:
+	if fruit == null:
 		return
-	var canvas := _active_fruit as CanvasItem
-	if canvas:
-		canvas.hide()
-	_active_fruit.set_deferred("monitoring", false)
-	_active_fruit.set_deferred("monitorable", false)
-	var collision := _active_fruit.get_node_or_null("CollisionShape2D") as CollisionShape2D
-	if collision:
-		collision.set_deferred("disabled", true)
+	_clear_ghosts_on_new_fruit()
+	_refresh_fruit_registry()
+	if _fruits_pending_reactivation.has(fruit) == false:
+		_fruits_pending_reactivation.append(fruit)
 
-func _activate_fruit_with_delay(delay: float) -> void:
-	_update_active_fruit_reference()
-	if not is_instance_valid(_active_fruit):
-		return
-	if delay <= 0.0:
-		_activate_fruit_now(true)
-		return
-	_fruit_activation_pending = true
-	var timer := get_tree().create_timer(delay)
-	timer.timeout.connect(Callable(self, "_on_fruit_activation_timeout"))
+func _refresh_fruit_registry() -> void:
+	var fruits := get_tree().get_nodes_in_group("fruits")
+	_fruits.clear()
+	for fruit in fruits:
+		var area := fruit as Area2D
+		if area:
+			_fruits.append(area)
+	if _fruits.is_empty() and fruit_scene:
+		var new_fruit := fruit_scene.instantiate()
+		add_child(new_fruit)
+		var new_area := new_fruit as Area2D
+		if new_area:
+			var node2d := new_area as Node2D
+			if node2d:
+				node2d.global_position = _default_fruit_spawn_position()
+			if new_area.has_method("reset_fruit"):
+				new_area.reset_fruit()
+			_fruits.append(new_area)
 
-func _on_fruit_activation_timeout() -> void:
-	_activate_fruit_now()
+func _reactivate_all_fruits() -> void:
+	_refresh_fruit_registry()
+	for fruit in _fruits:
+		if is_instance_valid(fruit):
+			if fruit.has_method("reset_fruit"):
+				fruit.reset_fruit()
+	_fruits_pending_reactivation.clear()
+	_cancel_pending_reactivation_timer()
 
-func _activate_fruit_now(force: bool = false) -> void:
-	_update_active_fruit_reference()
-	if not is_instance_valid(_active_fruit):
-		_fruit_activation_pending = false
+func _reactivate_pending_fruits_immediately() -> void:
+	if _fruits_pending_reactivation.is_empty():
 		return
-	if not force and _fruit_activation_pending == false:
+	for fruit in _fruits_pending_reactivation:
+		if is_instance_valid(fruit) and fruit.has_method("reset_fruit"):
+			fruit.reset_fruit()
+	_fruits_pending_reactivation.clear()
+	_cancel_pending_reactivation_timer()
+
+func _reactivate_pending_fruits_with_delay(delay: float) -> void:
+	if _fruits_pending_reactivation.is_empty():
 		return
-	_fruit_activation_pending = false
-	if _active_fruit.has_method("reset_fruit"):
-		_active_fruit.reset_fruit()
-	else:
-		var canvas := _active_fruit as CanvasItem
-		if canvas:
-			canvas.show()
-		_active_fruit.set_deferred("monitoring", true)
-		_active_fruit.set_deferred("monitorable", true)
-		var collision := _active_fruit.get_node_or_null("CollisionShape2D") as CollisionShape2D
-		if collision:
-			collision.set_deferred("disabled", false)
+	if is_instance_valid(_fruit_reactivation_timer):
+		return
+	_fruit_reactivation_timer = get_tree().create_timer(delay)
+	if _fruit_reactivation_timer:
+		_fruit_reactivation_timer.timeout.connect(Callable(self, "_on_pending_fruit_reactivation_timeout"))
+
+func _cancel_pending_reactivation_timer() -> void:
+	if is_instance_valid(_fruit_reactivation_timer):
+		_fruit_reactivation_timer.queue_free()
+	_fruit_reactivation_timer = null
+
+func _on_pending_fruit_reactivation_timeout() -> void:
+	_fruit_reactivation_timer = null
+	_reactivate_pending_fruits_immediately()
 
 func _on_ghost_finished() -> void:
-	_activate_fruit_with_delay(0.5)
+	_reactivate_pending_fruits_with_delay(0.5)
 
-func _update_active_fruit_reference() -> void:
-	if is_instance_valid(_active_fruit):
-		return
-	var fruits := get_tree().get_nodes_in_group("fruits")
-	for fruit in fruits:
-		if is_instance_valid(fruit):
-			var candidate := fruit as Area2D
-			if candidate:
-				_active_fruit = candidate
-				return
-	_active_fruit = null
+func _clear_ghosts_on_new_fruit() -> void:
+	recordings_history.clear()
+	_clear_ghosts()
 
 func spawn_ghosts() -> void:
 	if ghost_container == null or ghost_scene == null:
@@ -231,7 +242,7 @@ func start_new_loop() -> void:
 	_loop_start_position = Vector2.ZERO
 	if AudioManager:
 		AudioManager.play_reset_sfx()
-	_respawn_fruit(true, true)
+	_reactivate_all_fruits()
 	_ensure_player_reference()
 	if _player == null:
 		push_warning("GameManager: No player assigned. Assign one via existing_player export or set_player().")
@@ -272,37 +283,6 @@ func _restart_player_fruit_state() -> void:
 	if _player and _player.has_method("reset_fruit"):
 		_player.reset_fruit()
 
-func _respawn_fruit(force: bool = false, reactivate: bool = false) -> void:
-	var fruits := get_tree().get_nodes_in_group("fruits")
-	var target_position := _compute_fruit_spawn_position()
-	if force:
-		for fruit in fruits:
-			if is_instance_valid(fruit):
-				fruit.queue_free()
-		fruits = []
-		_active_fruit = null
-	var fruit_node: Area2D = null
-	for fruit in fruits:
-		if is_instance_valid(fruit):
-			fruit_node = fruit as Area2D
-			break
-	if fruit_node == null:
-		if fruit_scene == null:
-			return
-		var new_fruit := fruit_scene.instantiate()
-		add_child(new_fruit)
-		fruit_node = new_fruit as Area2D
-	if fruit_node == null:
-		return
-	_active_fruit = fruit_node
-	var fruit_node2d := fruit_node as Node2D
-	if fruit_node2d:
-		fruit_node2d.global_position = target_position
-	if reactivate:
-		_activate_fruit_now(true)
-	else:
-		_ensure_fruit_hidden()
-
 func connect_level_signals() -> void:
 	var goal_callable := Callable(self, "_on_level_won")
 	for goal in get_tree().get_nodes_in_group("goals"):
@@ -319,6 +299,17 @@ func _log_loop_feedback(created_ghost: bool) -> void:
 	else:
 		print("Intento fallido: Sin fruta")
 
+func _default_fruit_spawn_position() -> Vector2:
+	if fruit_spawn_point:
+		return fruit_spawn_point.global_position
+	if _has_loop_start_position:
+		return _loop_start_position
+	if spawn_point:
+		return spawn_point.global_position
+	if _player:
+		return _player.global_position
+	return Vector2.ZERO
+
 func _determine_start_position() -> Vector2:
 	if _has_loop_start_position:
 		return _loop_start_position
@@ -328,13 +319,4 @@ func _determine_start_position() -> Vector2:
 		return fruit_spawn_point.global_position
 	if _player:
 		return _player.global_position
-	return Vector2.ZERO
-
-func _compute_fruit_spawn_position() -> Vector2:
-	if fruit_spawn_point:
-		return fruit_spawn_point.global_position
-	if _has_loop_start_position:
-		return _loop_start_position
-	if spawn_point:
-		return spawn_point.global_position
 	return Vector2.ZERO
