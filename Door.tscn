@@ -1,19 +1,43 @@
-[gd_scene load_steps=4 format=3 uid="uid://dkry018myrhhq"]
+[gd_scene load_steps=6 format=3 uid="uid://dkry018myrhhq"]
 
 [ext_resource type="Texture2D" uid="uid://dc3gcgipinbxc" path="res://Pixel Adventure 1/Free/Traps/Blocks/HitSide (22x22).png" id="1_1vvux"]
 [ext_resource type="Script" uid="uid://bmy7jfyla0ld5" path="res://Door.gd" id="1_iu8q0"]
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_iu8q0"]
+atlas = ExtResource("1_1vvux")
+region = Rect2(0, 0, 22, 22)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_cuixy"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iu8q0")
+}],
+"loop": true,
+"name": &"closed",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": null
+}],
+"loop": true,
+"name": &"open",
+"speed": 5.0
+}]
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_iu8q0"]
-size = Vector2(10, 20)
+size = Vector2(6.66667, 14.6667)
 
 [node name="StaticBody2D" type="StaticBody2D"]
 script = ExtResource("1_iu8q0")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-scale = Vector2(1.5, 1.5)
-shape = SubResource("RectangleShape2D_iu8q0")
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+scale = Vector2(2, 2)
+sprite_frames = SubResource("SpriteFrames_cuixy")
+animation = &"closed"
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("1_1vvux")
-hframes = 3
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-1.19209e-07, 3.57628e-07)
+scale = Vector2(2.5, 2.5)
+shape = SubResource("RectangleShape2D_iu8q0")

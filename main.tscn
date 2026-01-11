@@ -15,7 +15,7 @@
 [ext_resource type="PackedScene" uid="uid://boymctn7whpxq" path="res://StoneHead.tscn" id="13_w48qg"]
 [ext_resource type="PackedScene" uid="uid://b01xnef1glkta" path="res://ButtonStone.tscn" id="14_vivmo"]
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_kek77"]
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_w48qg"]
 texture = ExtResource("8_5vw27")
 0:0/0 = 0
 0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
@@ -308,7 +308,7 @@ texture = ExtResource("8_5vw27")
 
 [sub_resource type="TileSet" id="TileSet_4c57u"]
 physics_layer_0/collision_layer = 1
-sources/2 = SubResource("TileSetAtlasSource_kek77")
+sources/2 = SubResource("TileSetAtlasSource_w48qg")
 
 [node name="Main" type="Node2D" node_paths=PackedStringArray("spawn_point", "ghost_container", "timer_label", "fruit_spawn_point", "existing_player")]
 position = Vector2(58, 66)

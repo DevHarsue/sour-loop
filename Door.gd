@@ -61,8 +61,9 @@ func _play_animation(name: StringName) -> void:
 	if _animation_player and _animation_player.has_animation(name):
 		_animation_player.play(name)
 		return
-	if _animated_sprite:
-		if _animated_sprite.has_animation(name):
+	if _animated_sprite and _animated_sprite.sprite_frames:
+		var frames := _animated_sprite.sprite_frames
+		if frames.has_animation(name):
 			_animated_sprite.play(name)
 		elif name == closed_animation:
 			_animated_sprite.stop()

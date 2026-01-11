@@ -45,7 +45,7 @@ func _process(delta: float) -> void:
 
 func update_timer_label() -> void:
 	if timer_label:
-		timer_label.text = "Tiempo: %.2f / %.2f" % [current_time, loop_duration]
+		timer_label.text = "Time: %.2f / %.2f" % [current_time, loop_duration]
 
 func trigger_loop_start(start_position: Vector2) -> void:
 	if _state == GameState.RECORDING_ACTION:

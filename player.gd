@@ -32,7 +32,7 @@ func reset_fruit() -> void:
 func enable_ghost_power() -> void:
 	has_ghost_power = true
 	if _sprite:
-		_sprite.modulate = Color(1.0, 1.0, 0.3)
+		_sprite.modulate = Color(0.4, 0.7, 1.0)
 
 func start_new_recording() -> void:
 	current_recording.clear()

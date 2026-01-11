@@ -199,6 +199,7 @@ script = ExtResource("1_kpjcp")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0.5, 3)
+scale = Vector2(0.9, 1)
 shape = SubResource("RectangleShape2D_e80uo")
 one_way_collision = true
 
