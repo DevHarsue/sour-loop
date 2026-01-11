@@ -1,0 +1,60 @@
+[gd_scene load_steps=9 format=3 uid="uid://boymctn7whpxq"]
+
+[ext_resource type="Script" uid="uid://bwxsg6e1ikedy" path="res://StoneHead.gd" id="1_c08cd"]
+[ext_resource type="Texture2D" uid="uid://ctlrpghe06wwc" path="res://Pixel Adventure 1/Free/Traps/Rock Head/Idle.png" id="2_c08cd"]
+[ext_resource type="Texture2D" uid="uid://1ytbqhtgvn27" path="res://Pixel Adventure 1/Free/Traps/Rock Head/Blink (42x42).png" id="3_86l1e"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uldyr"]
+atlas = ExtResource("2_c08cd")
+region = Rect2(0, 0, 42, 42)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8pi17"]
+atlas = ExtResource("2_c08cd")
+region = Rect2(0, 0, 42, 42)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jgs68"]
+atlas = ExtResource("3_86l1e")
+region = Rect2(42, 0, 42, 42)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_nhor4"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uldyr")
+}],
+"loop": true,
+"name": &"angry",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8pi17")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 20.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jgs68")
+}],
+"loop": true,
+"name": &"sleep",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0kkfq"]
+size = Vector2(19, 30)
+
+[node name="Area2D" type="Area2D"]
+script = ExtResource("1_c08cd")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+scale = Vector2(2, 2)
+sprite_frames = SubResource("SpriteFrames_nhor4")
+animation = &"sleep"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-0.5, 0)
+scale = Vector2(2, 2)
+shape = SubResource("RectangleShape2D_0kkfq")

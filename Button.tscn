@@ -1,0 +1,40 @@
+[gd_scene load_steps=6 format=3 uid="uid://dl77r82rp7et8"]
+
+[ext_resource type="Script" uid="uid://3tbpqocj6io6" path="res://PressurePlate.gd" id="1_nhor4"]
+[ext_resource type="Texture2D" uid="uid://dpifecxacw1n" path="res://buttom.png" id="2_lc4xp"]
+[ext_resource type="Texture2D" uid="uid://dc4ac76x0pwk6" path="res://buttom_pressed.png" id="3_0kkfq"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0kkfq"]
+size = Vector2(19, 4)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_nhor4"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_lc4xp")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_0kkfq")
+}],
+"loop": true,
+"name": &"pressed",
+"speed": 5.0
+}]
+
+[node name="Area2D" type="Area2D"]
+script = ExtResource("1_nhor4")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-0.5, 0)
+scale = Vector2(2, 2)
+shape = SubResource("RectangleShape2D_0kkfq")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+scale = Vector2(2, 2)
+sprite_frames = SubResource("SpriteFrames_nhor4")
+animation = &"pressed"

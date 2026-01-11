@@ -1,18 +1,17 @@
 [gd_scene load_steps=3 format=3 uid="uid://byml7tnx1h6ae"]
 
-[ext_resource type="Script" uid="uid://dm9n1qpau5p3d" path="res://floor.gd" id="1_gcayc"]
+[ext_resource type="Script" uid="uid://cly30y0j8cyvk" path="res://floor.gd" id="1_gcayc"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0a7mj"]
 size = Vector2(512, 32)
 
 [node name="Floor" type="StaticBody2D"]
 script = ExtResource("1_gcayc")
-collision_layer = 1
-collision_mask = 1
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 16)
 shape = SubResource("RectangleShape2D_0a7mj")
 
-[node name="Polygon2D" type="Polygon2D" parent="Floor"]
+[node name="Polygon2D" type="Polygon2D" parent="."]
 color = Color(0.24, 0.74, 0.35, 1)
 polygon = PackedVector2Array(-256, 0, 256, 0, 256, 32, -256, 32)

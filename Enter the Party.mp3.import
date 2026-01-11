@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://bb0mkbwhcio3e"
+path="res://.godot/imported/Enter the Party.mp3-58b89190015452e4ad262cb680479353.mp3str"
+
+[deps]
+
+source_file="res://Enter the Party.mp3"
+dest_files=["res://.godot/imported/Enter the Party.mp3-58b89190015452e4ad262cb680479353.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

@@ -1,0 +1,28 @@
+[gd_scene load_steps=5 format=3 uid="uid://dohqw026mh3i"]
+
+[ext_resource type="Script" uid="uid://dops3n7jul21w" path="res://Spike.gd" id="1_7k7bx"]
+[ext_resource type="Texture2D" uid="uid://deudu6qxunxv1" path="res://Pixel Adventure 1/Free/Traps/Spiked Ball/Spiked Ball.png" id="1_8ryga"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_7k7bx"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_8ryga")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_tggh8"]
+
+[node name="Area2D" type="Area2D"]
+script = ExtResource("1_7k7bx")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_7k7bx")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(1, 0)
+scale = Vector2(0.85, 0.85)
+shape = SubResource("CircleShape2D_tggh8")
